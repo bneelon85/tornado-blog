@@ -41,6 +41,11 @@ class BlogPostHandler(TemplateHandler):
       'SELECT * FROM post INNER JOIN author ON post.author_id=author.id WHERE slug = %(slug)s',
       {'slug': slug}
     )
+    #comments = self.session.query(
+    #  'SELECT * FROM comments INNER JOIN post ON post.id=comments.post_id WHERE slug = %(slug)s',
+    #  {'slug': slug}
+    #  )
+   # print(comments[0])
     
     html = markdown2.markdown(posts[0]['body'])
     context = {
@@ -55,6 +60,7 @@ class CommentHandler(TemplateHandler):
       'SELECT * FROM post WHERE slug = %(slug)s',
       {'slug': slug}
     )
+    print(posts[0])
     self.render_template("comment.html", {'post': posts[0]})
     
   def post (self, slug):
@@ -63,10 +69,10 @@ class CommentHandler(TemplateHandler):
       'SELECT * FROM post WHERE slug = %(slug)s',
       {'slug': slug}
     )
-    #insert  = self.session.query(
-     # 'INSERT INTO comment VALUES(DEFAULT, post.id, ',
-      #{'slug': slug}
-   # )
+    self.session.query(
+      'INSERT INTO comments VALUES(DEFAULT, %(post_id)s, %(comment)s)',
+      {'post_id': posts[0]['id'], 'comment':comment}
+    )
     self.redirect('/post/' + slug)
     
 def make_app():
