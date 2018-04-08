@@ -30,10 +30,15 @@ class MainHandler(TemplateHandler):
     posts = self.session.query('SELECT * FROM post')
     self.render_template("home.html", {'posts': posts})
     
+class AuthorHandler(TemplateHandler):
+  def get (self):
+    authors = self.session.query('SELECT * FROM author')
+    self.render_template("authors.html", {'authors': authors})
+    
 class BlogPostHandler(TemplateHandler):
   def get (self, slug):
     posts = self.session.query(
-      'SELECT * FROM post WHERE slug = %(slug)s',
+      'SELECT * FROM post INNER JOIN author ON post.author_id=author.id WHERE slug = %(slug)s',
       {'slug': slug}
     )
     
@@ -58,7 +63,10 @@ class CommentHandler(TemplateHandler):
       'SELECT * FROM post WHERE slug = %(slug)s',
       {'slug': slug}
     )
-    # Save Comment Here
+    #insert  = self.session.query(
+     # 'INSERT INTO comment VALUES(DEFAULT, post.id, ',
+      #{'slug': slug}
+   # )
     self.redirect('/post/' + slug)
     
 def make_app():
@@ -66,6 +74,7 @@ def make_app():
     (r"/", MainHandler),
     (r"/post/(.*)/comment", CommentHandler),
     (r"/post/(.*)", BlogPostHandler),
+    (r"/authors", AuthorHandler),
     (r"/static/(.*)", 
       tornado.web.StaticFileHandler, {'path': 'static'}),
   ], autoreload=True)
