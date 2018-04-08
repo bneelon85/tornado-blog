@@ -33,6 +33,7 @@ class MainHandler(TemplateHandler):
 class AuthorHandler(TemplateHandler):
   def get (self):
     authors = self.session.query('SELECT * FROM author')
+    print(authors[0])
     self.render_template("authors.html", {'authors': authors})
     
 class BlogPostHandler(TemplateHandler):
